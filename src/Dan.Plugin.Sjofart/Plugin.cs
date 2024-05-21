@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace Dan.Plugin.DATASOURCENAME;
+namespace Dan.Plugin.Sjofart;
 
 public class Plugin
 {

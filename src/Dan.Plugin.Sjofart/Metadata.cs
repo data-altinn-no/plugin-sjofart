@@ -10,7 +10,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Newtonsoft.Json.Schema.Generation;
 
-namespace Dan.Plugin.DATASOURCENAME;
+namespace Dan.Plugin.Sjofart;
 
 /// <summary>
 /// All plugins must implement IEvidenceSourceMetadata, which describes that datasets returned by this plugin. An example is implemented below.
