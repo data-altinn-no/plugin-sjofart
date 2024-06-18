@@ -1,14 +1,15 @@
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
 using Dan.Common;
 using Dan.Common.Enums;
 using Dan.Common.Interfaces;
 using Dan.Common.Models;
-using Dan.Plugin.DATASOURCENAME.Models;
+using Dan.Plugin.Sjofart.Models;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Newtonsoft.Json.Schema.Generation;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
+using NJsonSchema;
 
 namespace Dan.Plugin.Sjofart;
 
@@ -17,6 +18,8 @@ namespace Dan.Plugin.Sjofart;
 /// </summary>
 public class Metadata : IEvidenceSourceMetadata
 {
+
+    private const string SOURCE = "Sjøfartsdirektoratet";
     /// <summary>
     /// 
     /// </summary>
@@ -29,41 +32,15 @@ public class Metadata : IEvidenceSourceMetadata
         {
             new()
             {
-                EvidenceCodeName = global::Dan.Plugin.DATASOURCENAME.Plugin.SimpleDatasetName,
-                EvidenceSource = global::Dan.Plugin.DATASOURCENAME.Plugin.SourceName,
+                EvidenceCodeName = "Skipsregistrene",
+                EvidenceSource = SOURCE,
                 Values = new List<EvidenceValue>()
                 {
                     new()
                     {
-                        EvidenceValueName = "field1",
-                        ValueType = EvidenceValueType.String
-                    },
-                    new()
-                    {
-                        EvidenceValueName = "field2",
-                        ValueType = EvidenceValueType.String
-                    }
-                }
-            },
-            new()
-            {
-                EvidenceCodeName = global::Dan.Plugin.DATASOURCENAME.Plugin.RichDatasetName,
-                EvidenceSource = global::Dan.Plugin.DATASOURCENAME.Plugin.SourceName,
-                Values = new List<EvidenceValue>()
-                {
-                    new()
-                    {
-                        // Convention for rich datasets with a single JSON model is to use the value name "default"
                         EvidenceValueName = "default",
                         ValueType = EvidenceValueType.JsonSchema,
-                        JsonSchemaDefintion =  generator.Generate(typeof(ExampleModel)).ToString()
-                    }
-                },
-                AuthorizationRequirements = new List<Requirement>
-                {
-                    new MaskinportenScopeRequirement
-                    {
-                        RequiredScopes = new List<string> { "altinn:dataaltinnno/somescope" }
+                        JsonSchemaDefintion = JsonSchema.FromType<ResponseModel>().ToJson(Newtonsoft.Json.Formatting.Indented)
                     }
                 }
             }
