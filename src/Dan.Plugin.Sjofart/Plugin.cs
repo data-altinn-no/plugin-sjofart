@@ -11,12 +11,13 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Dan.Common.Services;
-using Dan.Plugin.Sjofart.Nswag;
+using Dan.Plugin.Sjofart.Clients;
+using Dan.Plugin.Sjofart.Mappers;
+using Dan.Plugin.Sjofart.Models;
 
 namespace Dan.Plugin.Sjofart;
 
@@ -27,6 +28,8 @@ public class Plugin
     private readonly HttpClient _client;
     private readonly Settings _settings;
     private readonly IEntityRegistryService _erService;
+    private readonly ISjofartClient _sjofartClient;
+    private readonly IMapper<HistoricalVesselData, ResponseModel> _responseMapper;
 
     // The datasets must supply a human-readable source description from which they originate. Individual fields might come from different sources, and this string should reflect that (ie. name all possible sources).
     public const string SourceName = "Sjofartsdirektoratet";
@@ -43,13 +46,17 @@ public class Plugin
         ILoggerFactory loggerFactory,
         IOptions<Settings> settings,
         IEvidenceSourceMetadata evidenceSourceMetadata,
-        IEntityRegistryService entityRegistryService)
+        IEntityRegistryService entityRegistryService,
+        ISjofartClient sjofartClient,
+        IMapper<HistoricalVesselData, ResponseModel> responseMapper)
     {
         _client = httpClientFactory.CreateClient(Constants.SafeHttpClient);
         _logger = loggerFactory.CreateLogger<Plugin>();
         _settings = settings.Value;
         _evidenceSourceMetadata = evidenceSourceMetadata;
         _erService = entityRegistryService;
+        _sjofartClient = sjofartClient;
+        _responseMapper = responseMapper;
 
         _logger.LogDebug("Initialized plugin! This should be visible in the console");
     }
@@ -68,16 +75,12 @@ public class Plugin
 
     private async Task<List<EvidenceValue>> GetEvidenceValuesSimpledataset(EvidenceHarvesterRequest evidenceHarvesterRequest)
     {
-        var url = _settings.EndpointUrl + "?someparameter=" + evidenceHarvesterRequest.OrganizationNumber;
-        var sjofartClient = new Client(_client);
-        sjofartClient.BaseUrl = _settings.EndpointUrl;
-       
-        
-        var entity = await _erService.GetFull(evidenceHarvesterRequest.OrganizationNumber, true, false, false);
-        var response = sjofartClient.GetVesselDataByOwnershipAsync(null, "", null, null, null, "", "", null, null, null, null, entity.Navn, "", "", null, null, ""):
+        var entity = await _erService.GetFull(evidenceHarvesterRequest.OrganizationNumber!, true, false, false);
+        var vesselData = await _sjofartClient.GetVesselsByOrgNumber(evidenceHarvesterRequest.OrganizationNumber);
+        var responseData = vesselData.Select(_responseMapper.Map).ToList();
 
         var ecb = new EvidenceBuilder(_evidenceSourceMetadata, "Skipsregistrene");
-        ecb.AddEvidenceValue("default", JsonConvert.SerializeObject(result), SourceName);
+        ecb.AddEvidenceValue("default", responseData, SourceName);
 
         return ecb.GetEvidenceValues();
     }

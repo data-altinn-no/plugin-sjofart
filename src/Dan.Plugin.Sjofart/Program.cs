@@ -1,6 +1,10 @@
 using Dan.Plugin.Sjofart;
 using Microsoft.Extensions.Hosting;
 using Dan.Common.Extensions;
+using Dan.Plugin.Sjofart.Clients;
+using Dan.Plugin.Sjofart.Config;
+using Dan.Plugin.Sjofart.Mappers;
+using Dan.Plugin.Sjofart.Models;
 using Microsoft.Extensions.DependencyInjection;
 
 var host = new HostBuilder()
@@ -13,6 +17,8 @@ var host = new HostBuilder()
     .ConfigureServices((context, services) =>
     {
         // Add any additional services here
+        services.AddTransient<ISjofartClient, SjofartClient>();
+        services.AddTransient<IMapper<HistoricalVesselData, ResponseModel>, ResponseModelMapper>();
 
         // This makes IOption<Settings> available in the DI container.
         var configurationRoot = context.Configuration;

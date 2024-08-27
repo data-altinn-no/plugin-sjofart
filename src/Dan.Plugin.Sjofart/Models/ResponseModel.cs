@@ -28,7 +28,7 @@ public class ResponseModel
     public string Registry { get; set; }
 
     [JsonProperty("imo-nummer")]
-    public string IMO { get; set; }
+    public string Imo { get; set; }
 
     [JsonProperty("status")]
     public string Status { get; set; }
@@ -53,5 +53,4 @@ public class ResponseModel
 
     [JsonProperty("byggeverft")]
     public string ShipYard { get; set; }
-
 }

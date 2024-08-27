@@ -5,7 +5,6 @@ using Dan.Common.Models;
 using Dan.Plugin.Sjofart.Models;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
-using Newtonsoft.Json.Schema.Generation;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -18,33 +17,33 @@ namespace Dan.Plugin.Sjofart;
 /// </summary>
 public class Metadata : IEvidenceSourceMetadata
 {
+    private const string Source = "Sjøfartsdirektoratet";
 
-    private const string SOURCE = "Sjøfartsdirektoratet";
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <returns></returns>
     public List<EvidenceCode> GetEvidenceCodes()
     {
-        JSchemaGenerator generator = new JSchemaGenerator();
-
-        return new List<EvidenceCode>()
-        {
-            new()
+        return
+        [
+            new EvidenceCode
             {
                 EvidenceCodeName = "Skipsregistrene",
-                EvidenceSource = SOURCE,
-                Values = new List<EvidenceValue>()
-                {
-                    new()
+                EvidenceSource = Source,
+                Values =
+                [
+                    new EvidenceValue
                     {
                         EvidenceValueName = "default",
                         ValueType = EvidenceValueType.JsonSchema,
-                        JsonSchemaDefintion = JsonSchema.FromType<ResponseModel>().ToJson(Newtonsoft.Json.Formatting.Indented)
+                        JsonSchemaDefintion = JsonSchema
+                            .FromType<ResponseModel>()
+                            .ToJson(Newtonsoft.Json.Formatting.Indented)
                     }
-                }
+                ]
             }
-        };
+        ];
     }
 
 
