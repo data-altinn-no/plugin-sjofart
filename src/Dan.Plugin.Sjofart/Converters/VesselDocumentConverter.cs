@@ -21,8 +21,9 @@ public class VesselDocumentConverter : JsonConverter<IVesselDocument>
     {
         var variable = JObject.Load(reader);
 
-        var documentType = variable.GetValue(IVesselDocument.DocumentType)?.Value<string>();
+        var documentType = variable.GetValue(IVesselDocument.DocumentTypeId)?.Value<string>();
 
+        // TODO: look into a way to automate this better, just to cut down on potential human errors when adding new documents
         return documentType switch
         {
             MeasurementDataDocument.DocumentIdentifier => variable.ToObject<MeasurementDataDocument>(),
@@ -32,6 +33,7 @@ public class VesselDocumentConverter : JsonConverter<IVesselDocument>
             MaintenanceDocument.DocumentIdentifier => variable.ToObject<MaintenanceDocument>(),
             MaintenanceDocument.DocumentIdentifierAlternative => variable.ToObject<MaintenanceDocument>(),
             MessageDocument.DocumentIdentifier => variable.ToObject<MessageDocument>(),
+            ShipyardDocument.ShipyardDocumentIdentifier => variable.ToObject<ShipyardDocument>(),
             _ => variable.ToObject<UnusedDocument>()
         };
     }

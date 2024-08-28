@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
-using System.Resources;
 using System.Threading.Tasks;
 using System.Web;
 using Dan.Common;
+using Dan.Common.Exceptions;
 using Dan.Plugin.Sjofart.Config;
 using Dan.Plugin.Sjofart.Models;
 using Dan.Plugin.Sjofart.Models.VesselDocuments;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
@@ -19,10 +21,11 @@ public interface ISjofartClient
     Task<IEnumerable<HistoricalVesselData>> GetVesselsByOrgNumber(string organiztionNumber);
 }
 
-public class SjofartClient(IHttpClientFactory clientFactory, IOptions<Settings> settings) : ISjofartClient
+public class SjofartClient(IHttpClientFactory clientFactory, IOptions<Settings> settings, ILoggerFactory loggerFactory) : ISjofartClient
 {
     private readonly HttpClient _client = clientFactory.CreateClient(Constants.SafeHttpClient);
     private readonly Settings _settings = settings.Value;
+    private readonly ILogger<SjofartClient> _logger = loggerFactory.CreateLogger<SjofartClient>();
 
     private const int MaxPageSize = 100;
 
@@ -37,11 +40,7 @@ public class SjofartClient(IHttpClientFactory clientFactory, IOptions<Settings> 
         do
         {
             var request = GetRequest($"{baseAddress}{path}", organiztionNumber, currentOffset);
-
-            var response = await _client.SendAsync(request);
-            var content = await response.Content.ReadAsStringAsync();
-            var sjofartResponse = JsonConvert.DeserializeObject<SjofartResponse<HistoricalVesselData>>(content);
-
+            var sjofartResponse = await MakeRequest<SjofartResponse<HistoricalVesselData>>(request);
             vesselData.AddRange(sjofartResponse.SearchResult);
 
             totalCount = sjofartResponse.Count;
@@ -66,15 +65,48 @@ public class SjofartClient(IHttpClientFactory clientFactory, IOptions<Settings> 
         return request;
     }
 
+    private async Task<T> MakeRequest<T>(HttpRequestMessage request)
+    {
+        HttpResponseMessage result;
+        try
+        {
+            result = await _client.SendAsync(request);
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new EvidenceSourceTransientException(PluginConstants.ErrorUpstreamUnavailble, "Error communicating with upstream source", ex);
+        }
+
+        if (!result.IsSuccessStatusCode)
+        {
+            throw result.StatusCode switch
+            {
+                HttpStatusCode.NotFound => new EvidenceSourcePermanentClientException(PluginConstants.ErrorNotFound, "Upstream source could not find the requested entity (404)"),
+                HttpStatusCode.BadRequest => new EvidenceSourcePermanentClientException(PluginConstants.ErrorInvalidInput,  "Upstream source indicated an invalid request (400)"),
+                _ => new EvidenceSourceTransientException(PluginConstants.ErrorUpstreamUnavailble, $"Upstream source retuned an HTTP error code ({(int)result.StatusCode})")
+            };
+        }
+
+        try
+        {
+            return JsonConvert.DeserializeObject<T>(await result.Content.ReadAsStringAsync());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Unable to parse data returned from upstream source: {exceptionType}: {exceptionMessage}", ex.GetType().Name, ex.Message);
+            throw new EvidenceSourcePermanentServerException(PluginConstants.ErrorUnableToParseResponse, "Could not parse the data model returned from upstream source", ex);
+        }
+    }
+
     // Only interested in vessels that either are owned by or maintained by the organization being looked up
     private static List<HistoricalVesselData> GetRelevantVessels(IEnumerable<HistoricalVesselData> response, string organizationNumber)
     {
         // TODO: const the strings used here, they are used elsewhere too
         return response
             .Where(sr =>
-                sr.Documents.OfType<ILegalEntityVesselDocument>().Any(d =>
-                    d.GetLegalEntityIdForRoleName("eier") == organizationNumber ||
-                    d.GetLegalEntityIdForRoleName("driftsansvarlig") == organizationNumber))
+                sr.Documents.OfType<LegalEntityVesselDocument>().Any(d =>
+                    d.GetLegalEntityIdForRoleName(PluginConstants.LegalEntityOwnerRole) == organizationNumber ||
+                    d.GetLegalEntityIdForRoleName(PluginConstants.LegalEntityMaintenanceRole) == organizationNumber))
             .ToList();
     }
 }

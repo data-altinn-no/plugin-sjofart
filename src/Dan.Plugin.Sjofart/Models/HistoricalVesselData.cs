@@ -9,6 +9,9 @@ namespace Dan.Plugin.Sjofart.Models;
 // that we actually need to use
 public class HistoricalVesselData
 {
+    [JsonPropertyName("VesselId")]
+    public long? VesselId { get; set; }
+
     // Kjenningssignal
     [JsonPropertyName("CallSign")]
     public string CallSign { get; set; }

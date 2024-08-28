@@ -8,6 +8,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Dan.Plugin.Sjofart.Config;
 using NJsonSchema;
 
 namespace Dan.Plugin.Sjofart;
@@ -17,8 +18,6 @@ namespace Dan.Plugin.Sjofart;
 /// </summary>
 public class Metadata : IEvidenceSourceMetadata
 {
-    private const string Source = "Sjøfartsdirektoratet";
-
     /// <summary>
     ///
     /// </summary>
@@ -30,7 +29,7 @@ public class Metadata : IEvidenceSourceMetadata
             new EvidenceCode
             {
                 EvidenceCodeName = "Skipsregistrene",
-                EvidenceSource = Source,
+                EvidenceSource = PluginConstants.EvidenceSource,
                 Values =
                 [
                     new EvidenceValue

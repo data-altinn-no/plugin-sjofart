@@ -2,10 +2,10 @@ namespace Dan.Plugin.Sjofart.Config;
 
 public class Settings
 {
-    public int DefaultCircuitBreakerOpenCircuitTimeSeconds { get; set; }
-    public int DefaultCircuitBreakerFailureBeforeTripping { get; set; }
-    public int SafeHttpClientTimeout { get; set; }
+    public int DefaultCircuitBreakerOpenCircuitTimeSeconds { get; init; }
+    public int DefaultCircuitBreakerFailureBeforeTripping { get; init; }
+    public int SafeHttpClientTimeout { get; init; }
 
-    public string EndpointUrl { get; set; }
-    public string ApiToken { get; set; }
+    public string EndpointUrl { get; init; }
+    public string ApiToken { get; init; }
 }

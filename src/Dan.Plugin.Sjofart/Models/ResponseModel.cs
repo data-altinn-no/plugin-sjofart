@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 
 namespace Dan.Plugin.Sjofart.Models;
@@ -6,6 +7,9 @@ namespace Dan.Plugin.Sjofart.Models;
 [JsonObject]
 public class ResponseModel
 {
+    [JsonProperty("fartoeysId")]
+    public long? VesselId { get; set; }
+
     [JsonProperty("eierOrgNr")]
     public string OwnerOrgNumber { get; set; }
 
@@ -34,22 +38,22 @@ public class ResponseModel
     public string Status { get; set; }
 
     [JsonProperty("byggeaar")]
-    public int YearBuilt { get; set; }
+    public int? YearBuilt { get; set; }
 
     [JsonProperty("skipstype")]
     public string ShipType { get; set; }
 
     [JsonProperty("bruttotonnasje")]
-    public double GrossTonnage { get; set; }
+    public double? GrossTonnage { get; set; }
 
     [JsonProperty("nettotonnasje")]
-    public double NetTonnage { get; set; }
+    public double? NetTonnage { get; set; }
 
     [JsonProperty("heftelsedato")]
-    public DateTime LiabilityDate { get; set; }
+    public DateTime? LiabilityDate { get; set; }
 
     [JsonProperty("heftelsebeloep")]
-    public double LiabilityAmount { get; set; }
+    public double? LiabilityAmount { get; set; }
 
     [JsonProperty("byggeverft")]
     public string ShipYard { get; set; }

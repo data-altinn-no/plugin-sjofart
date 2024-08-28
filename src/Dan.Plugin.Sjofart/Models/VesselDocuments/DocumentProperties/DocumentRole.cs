@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Dan.Plugin.Sjofart.Models.VesselDocuments;
+namespace Dan.Plugin.Sjofart.Models.VesselDocuments.DocumentProperties;
 
 public class DocumentRole
 {

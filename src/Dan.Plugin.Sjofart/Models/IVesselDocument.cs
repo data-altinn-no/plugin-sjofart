@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
 namespace Dan.Plugin.Sjofart.Models;
 
@@ -6,6 +7,24 @@ namespace Dan.Plugin.Sjofart.Models;
 // to avoid creating any Dictionary<string, object> properties on HistoricalVesselData
 public interface IVesselDocument
 {
-    const string DocumentType = "DocumentType";
-    DateTime Date { get; }
+    const string DocumentTypeId = "DocumentType";
+    const string DocumentTypeClassId = "DocumentTypeClass";
+    const string DateId = "Date";
+
+    string DocumentType { get; set; }
+
+    string DocumentTypeClass { get; set; }
+    DateTime Date { get; set; }
+}
+
+public abstract class VesselDocument : IVesselDocument
+{
+    [JsonPropertyName(IVesselDocument.DocumentTypeId)]
+    public string DocumentType { get; set; }
+
+    [JsonPropertyName(IVesselDocument.DocumentTypeClassId)]
+    public string DocumentTypeClass { get; set; }
+
+    [JsonPropertyName(IVesselDocument.DateId)]
+    public DateTime Date { get; set; }
 }

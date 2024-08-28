@@ -3,14 +3,11 @@ using System.Text.Json.Serialization;
 
 namespace Dan.Plugin.Sjofart.Models.VesselDocuments;
 
-public class MeasurementDataDocument : IVesselDocument
+public class MeasurementDataDocument : VesselDocument
 {
     // TODO: Maybe we can use an array?
     public const string DocumentIdentifier = "MÅLEBREV";
     public const string DocumentIdentifierAlternative = "MÅLEDATA";
-
-    [JsonPropertyName("Date")]
-    public DateTime Date { get; set; }
 
     [JsonPropertyName("SrMeasurementData")]
     public SrMeasurementData SrMeasurementData { get; set; }

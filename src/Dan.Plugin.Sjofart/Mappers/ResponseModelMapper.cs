@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Dan.Plugin.Sjofart.Config;
 using Dan.Plugin.Sjofart.Models;
 using Dan.Plugin.Sjofart.Models.VesselDocuments;
 
@@ -8,12 +9,11 @@ namespace Dan.Plugin.Sjofart.Mappers;
 
 public class ResponseModelMapper : IMapper<HistoricalVesselData, ResponseModel>
 {
-    // TODO: Incomplete
-    // TODO: const the strings used here, they are used elsewhere too
     public ResponseModel Map(HistoricalVesselData input)
     {
         var responseModel = new ResponseModel
         {
+            VesselId = input.VesselId,
             CallSign = input.CallSign,
             Registry = input.Register,
             Imo = input.Imo?.ToString(),
@@ -32,22 +32,23 @@ public class ResponseModelMapper : IMapper<HistoricalVesselData, ResponseModel>
 
         var ownerDocument = GetNewestDocumentOfType<AuthorityDocument>(
             input.Documents,
-            d => d.Roles.Any(r => string.Equals(r.RoleType, "eier", StringComparison.InvariantCultureIgnoreCase)));
+            d => d.Roles.Any(r => string.Equals(r.RoleType, PluginConstants.LegalEntityOwnerRole, StringComparison.InvariantCultureIgnoreCase)));
 
         if (ownerDocument is not null)
         {
-            var owner = ownerDocument.Roles.First(r => string.Equals(r.RoleType, "eier", StringComparison.InvariantCultureIgnoreCase));
+            var owner = ownerDocument.Roles.First(r => string.Equals(r.RoleType, PluginConstants.LegalEntityOwnerRole, StringComparison.InvariantCultureIgnoreCase));
             responseModel.OwnerName = owner.LegalEntity.Name;
             responseModel.OwnerOrgNumber = owner.LegalEntity.EntityId;
         }
 
         var maintenanceDocument = GetNewestDocumentOfType<MaintenanceDocument>(
             input.Documents,
-            d => d.Roles.Any(r => string.Equals(r.RoleType, "driftsselskap", StringComparison.InvariantCultureIgnoreCase)));
+            d => d.Roles.Any(r => string.Equals(r.RoleType, PluginConstants.LegalEntityMaintenanceCompanyRole, StringComparison.InvariantCultureIgnoreCase)));
 
+        // TODO: Doesn't seem to be reliable enough
         if (maintenanceDocument is not null)
         {
-            var mainentanceCompany = maintenanceDocument.Roles.First(r => string.Equals(r.RoleType, "driftsselskap", StringComparison.InvariantCultureIgnoreCase));
+            var mainentanceCompany = maintenanceDocument.Roles.First(r => string.Equals(r.RoleType, PluginConstants.LegalEntityMaintenanceCompanyRole, StringComparison.InvariantCultureIgnoreCase));
             responseModel.OperatingOrganisationName = mainentanceCompany.LegalEntity.Name;
             responseModel.OperationOrganisationNo = mainentanceCompany.LegalEntity.EntityId;
         }
@@ -55,7 +56,13 @@ public class ResponseModelMapper : IMapper<HistoricalVesselData, ResponseModel>
         var messageDocument = GetNewestDocumentOfType<MessageDocument>(input.Documents);
         if (messageDocument is not null)
         {
-            responseModel.YearBuilt = messageDocument.Construction.Year;
+            responseModel.YearBuilt = messageDocument.Construction?.Year;
+        }
+
+        var shipyardDocument = GetNewestDocumentOfType<ShipyardDocument>(input.Documents);
+        if (shipyardDocument is not null)
+        {
+            responseModel.ShipYard = shipyardDocument.Construction?.Shipyard;
         }
 
         // TODO: We need to know how to get liability data
