@@ -4,9 +4,11 @@ using Dan.Plugin.Sjofart.Models.VesselDocuments.DocumentProperties;
 
 namespace Dan.Plugin.Sjofart.Models.VesselDocuments;
 
-public class MessageDocument : VesselDocument
+[Serializable]
+public class MessageDocument : VesselDocument, IDocumentIdentifiable
 {
-    public const string DocumentIdentifier = "MELDING";
+    public static string DocumentTypeClassIdentifier => "ET";
+    public static string[] DocumentTypeIdentifiers => ["MELDING"];
 
     [JsonPropertyName("Construction")]
     public Construction Construction { get; set; }

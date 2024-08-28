@@ -1,26 +1,15 @@
 ﻿using System;
 using System.Text.Json.Serialization;
+using Dan.Plugin.Sjofart.Models.VesselDocuments.DocumentProperties;
 
 namespace Dan.Plugin.Sjofart.Models.VesselDocuments;
 
-public class MeasurementDataDocument : VesselDocument
+[Serializable]
+public class MeasurementDataDocument : VesselDocument, IDocumentIdentifiable
 {
-    // TODO: Maybe we can use an array?
-    public const string DocumentIdentifier = "MÅLEBREV";
-    public const string DocumentIdentifierAlternative = "MÅLEDATA";
+    public static string DocumentTypeClassIdentifier => "TE";
+    public static string[] DocumentTypeIdentifiers => ["MÅLEBREV", "MÅLEDATA"];
 
     [JsonPropertyName("SrMeasurementData")]
     public SrMeasurementData SrMeasurementData { get; set; }
-}
-
-public class SrMeasurementData
-{
-    [JsonPropertyName("VesselType")]
-    public string VesselType { get; set; }
-
-    [JsonPropertyName("GrossTonnage")]
-    public double GrossTonnage { get; set; }
-
-    [JsonPropertyName("NetTonnage")]
-    public double NetTonnage { get; set; }
 }

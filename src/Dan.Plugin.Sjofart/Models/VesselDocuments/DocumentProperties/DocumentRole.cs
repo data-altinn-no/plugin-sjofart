@@ -1,7 +1,9 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
 
 namespace Dan.Plugin.Sjofart.Models.VesselDocuments.DocumentProperties;
 
+[Serializable]
 public class DocumentRole
 {
     [JsonPropertyName("LegalEntity")]
@@ -11,6 +13,7 @@ public class DocumentRole
     public string RoleType { get; set; }
 }
 
+[Serializable]
 public class LegalEntity
 {
     [JsonPropertyName("Name")]

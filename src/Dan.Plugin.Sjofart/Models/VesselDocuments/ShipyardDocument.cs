@@ -4,9 +4,11 @@ using Dan.Plugin.Sjofart.Models.VesselDocuments.DocumentProperties;
 
 namespace Dan.Plugin.Sjofart.Models.VesselDocuments;
 
-public class ShipyardDocument : VesselDocument
+[Serializable]
+public class ShipyardDocument : VesselDocument, IDocumentIdentifiable
 {
-    public const string ShipyardDocumentIdentifier = "MELDING BYGGEVERFT";
+    public static string DocumentTypeClassIdentifier => "ET";
+    public static string[] DocumentTypeIdentifiers => ["MELDING BYGGEVERFT"];
 
     [JsonPropertyName("Construction")]
     public Construction Construction { get; set; }

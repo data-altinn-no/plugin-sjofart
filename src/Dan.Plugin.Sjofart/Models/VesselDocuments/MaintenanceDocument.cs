@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-using Dan.Plugin.Sjofart.Models.VesselDocuments.DocumentProperties;
 
 namespace Dan.Plugin.Sjofart.Models.VesselDocuments;
 
-public class MaintenanceDocument : LegalEntityVesselDocument
+[Serializable]
+public class MaintenanceDocument : LegalEntityVesselDocument, IDocumentIdentifiable
 {
-    public const string DocumentIdentifier = "DRIFT IHT SKIPSSIKKERHETSLOVEN";
-    public const string DocumentIdentifierAlternative = "DRIFT IHHT SJØLOVEN/NIS LOVEN";
+    public static string DocumentTypeClassIdentifier => "HJ";
+    public static string[] DocumentTypeIdentifiers => ["DRIFT IHT SKIPSSIKKERHETSLOVEN", "DRIFT IHHT SJØLOVEN/NIS LOVEN"];
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Dan.Plugin.Sjofart.Models;
 using Dan.Plugin.Sjofart.Models.VesselDocuments;
 using Newtonsoft.Json;
@@ -6,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Dan.Plugin.Sjofart.Converters;
 
-// SDir's documents in historical vessel data contains many types of documents with different values
+// SDir's documents in historical vessel data contains many objects of different structures
 // This converter is used to handle the deserialization of the documents we care about
 public class VesselDocumentConverter : JsonConverter<IVesselDocument>
 {
@@ -19,22 +20,37 @@ public class VesselDocumentConverter : JsonConverter<IVesselDocument>
     public override IVesselDocument ReadJson(JsonReader reader, Type objectType, IVesselDocument existingValue, bool hasExistingValue,
         JsonSerializer serializer)
     {
-        var variable = JObject.Load(reader);
+        var document = JObject.Load(reader);
 
-        var documentType = variable.GetValue(IVesselDocument.DocumentTypeId)?.Value<string>();
+        // Find the document identifiers
+        var documentType = document.GetValue(IVesselDocument.DocumentTypeId)?.Value<string>();
+        var documentTypeClass = document.GetValue(IVesselDocument.DocumentTypeClassId)?.Value<string>();
 
-        // TODO: look into a way to automate this better, just to cut down on potential human errors when adding new documents
-        return documentType switch
+        // Get all implementations of IVesselDocument that is concrete,
+        // implements IDocumentIdentifiable and is not UnusedDocument
+        var vesselDocumentTypes = typeof(IVesselDocument)
+            .Assembly
+            .GetTypes()
+            .Where(t =>
+                typeof(IDocumentIdentifiable).IsAssignableFrom(t) &&
+                typeof(IVesselDocument).IsAssignableFrom(t) &&
+                t.IsClass &&
+                !t.IsAbstract &&
+                t != typeof(UnusedDocument))
+            .ToList();
+
+        // Find the document type that matches the current's document class and document class type
+        var vesselDocumentType = vesselDocumentTypes
+            .FirstOrDefault(t => (string)t.GetProperty("DocumentTypeClassIdentifier")?.GetValue(null) == documentTypeClass &&
+                                 ((string[])t.GetProperty("DocumentTypeIdentifiers")?.GetValue(null) ?? []).Contains(documentType));
+
+        // If no match, deserialize to unused document
+        if (vesselDocumentType == null)
         {
-            MeasurementDataDocument.DocumentIdentifier => variable.ToObject<MeasurementDataDocument>(),
-            MeasurementDataDocument.DocumentIdentifierAlternative => variable.ToObject<MeasurementDataDocument>(),
-            AuthorityDocument.DocumentIdentifier => variable.ToObject<AuthorityDocument>(),
-            AuthorityDocument.DocumentIdentifierAlternative => variable.ToObject<AuthorityDocument>(),
-            MaintenanceDocument.DocumentIdentifier => variable.ToObject<MaintenanceDocument>(),
-            MaintenanceDocument.DocumentIdentifierAlternative => variable.ToObject<MaintenanceDocument>(),
-            MessageDocument.DocumentIdentifier => variable.ToObject<MessageDocument>(),
-            ShipyardDocument.ShipyardDocumentIdentifier => variable.ToObject<ShipyardDocument>(),
-            _ => variable.ToObject<UnusedDocument>()
-        };
+            return document.ToObject<UnusedDocument>();
+        }
+
+        // Match found, deserialize object and pass it back as IVesselDocument
+        return document.ToObject(vesselDocumentType) as IVesselDocument;
     }
 }

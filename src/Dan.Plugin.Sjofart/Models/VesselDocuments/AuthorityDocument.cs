@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-using Dan.Plugin.Sjofart.Models.VesselDocuments.DocumentProperties;
 
 namespace Dan.Plugin.Sjofart.Models.VesselDocuments;
 
-public class AuthorityDocument : LegalEntityVesselDocument
+[Serializable]
+public class AuthorityDocument : LegalEntityVesselDocument, IDocumentIdentifiable
 {
-    public const string DocumentIdentifier = "HJEMMELSDOKUMENT";
-    public const string DocumentIdentifierAlternative = "SKJØTE";
+    public static string DocumentTypeClassIdentifier => "HJ";
+    public static string[] DocumentTypeIdentifiers => ["HJEMMELSDOKUMENT", "SKJØTE"];
 }

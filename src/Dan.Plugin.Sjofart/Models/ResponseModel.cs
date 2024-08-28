@@ -7,7 +7,7 @@ namespace Dan.Plugin.Sjofart.Models;
 [JsonObject]
 public class ResponseModel
 {
-    [JsonProperty("fartoeysId")]
+    [JsonProperty("fartoeyId")]
     public long? VesselId { get; set; }
 
     [JsonProperty("eierOrgNr")]

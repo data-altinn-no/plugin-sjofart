@@ -6,7 +6,7 @@ using Dan.Plugin.Sjofart.Models.VesselDocuments.DocumentProperties;
 
 namespace Dan.Plugin.Sjofart.Models.VesselDocuments;
 
-// Only to be used on documents that have legal entity roles attached to the document
+[Serializable]
 public abstract class LegalEntityVesselDocument : VesselDocument
 {
     [JsonPropertyName("Roles")]
