@@ -41,8 +41,8 @@ public class VesselDocumentConverter : JsonConverter<IVesselDocument>
 
         // Find the document type that matches the current's document class and document class type
         var vesselDocumentType = vesselDocumentTypes
-            .FirstOrDefault(t => (string)t.GetProperty("DocumentTypeClassIdentifier")?.GetValue(null) == documentTypeClass &&
-                                 ((string[])t.GetProperty("DocumentTypeIdentifiers")?.GetValue(null) ?? []).Contains(documentType));
+            .FirstOrDefault(t => (string)t.GetProperty(nameof(IDocumentIdentifiable.DocumentTypeClassIdentifier))?.GetValue(null) == documentTypeClass &&
+                                 ((string[])t.GetProperty(nameof(IDocumentIdentifiable.DocumentTypeIdentifiers))?.GetValue(null) ?? []).Contains(documentType));
 
         // If no match, deserialize to unused document
         if (vesselDocumentType == null)
