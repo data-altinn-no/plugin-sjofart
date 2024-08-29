@@ -2,7 +2,7 @@
 
 Plugin for integrations towards Sjøfartsdirektoratet
 
-## Adding support for new documents
+## Adding mapping for new documents
 When calling Sjøfartsdirektoratet's API for vessel data, it contains a collection of Document objects. These documents
 do not share the same format, meaning they can't be reasonably deserialised into a simple POCO. To manage this, a
 custom JsonConverter has been made [VesselDocumentConverter](src/Dan.Plugin.Sjofart/Converters/VesselDocumentConverter.cs).
@@ -46,8 +46,8 @@ Let's make an example class for a document:
 }
 ```
 
-What is used as Identifiers for this Document is `"DocumentTypeClass"` and `"DocumentType"`. The class we make
-needs to implement the interface `IDocumentIdentifier` where we set these values. The class also needs to implement
+The identifiers for vessel documents are `"DocumentTypeClass"` and `"DocumentType"`. The class we make
+needs to implement the interface `IDocumentIdentifiable` where we set these values. The class also needs to implement
 `IVesselDocument`, the `VesselDocument` class is an abstract class that implements the interface that can be used too.
 
 So with that we can make a class that looks like:
