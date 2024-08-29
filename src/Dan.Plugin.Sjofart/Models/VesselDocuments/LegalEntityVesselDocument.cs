@@ -12,10 +12,10 @@ public abstract class LegalEntityVesselDocument : VesselDocument
     [JsonPropertyName("Roles")]
     public List<DocumentRole> Roles { get; set; }
 
-    public string GetLegalEntityIdForRoleName(string roleName)
+    public string GetLegalEntityIdForRoleType(string roleType)
     {
         return Roles
-            .FirstOrDefault(r => string.Equals(r.RoleType, roleName, StringComparison.InvariantCultureIgnoreCase))?
+            .FirstOrDefault(r => string.Equals(r.RoleType, roleType, StringComparison.InvariantCultureIgnoreCase))?
             .LegalEntity
             .EntityId;
     }

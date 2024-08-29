@@ -27,12 +27,6 @@ public interface IDocumentIdentifiable
 
 public abstract class VesselDocument : IVesselDocument
 {
-    [JsonPropertyName(IVesselDocument.DocumentTypeId)]
-    public string DocumentType { get; set; }
-
-    [JsonPropertyName(IVesselDocument.DocumentTypeClassId)]
-    public string DocumentTypeClass { get; set; }
-
     [JsonPropertyName(IVesselDocument.DateId)]
     public DateTime Date { get; set; }
 }

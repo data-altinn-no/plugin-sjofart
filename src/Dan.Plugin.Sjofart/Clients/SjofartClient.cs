@@ -99,14 +99,13 @@ public class SjofartClient(IHttpClientFactory clientFactory, IOptions<Settings> 
     }
 
     // Only interested in vessels that either are owned by or maintained by the organization being looked up
-    private static List<HistoricalVesselData> GetRelevantVessels(IEnumerable<HistoricalVesselData> response, string organizationNumber)
+    public static List<HistoricalVesselData> GetRelevantVessels(IEnumerable<HistoricalVesselData> response, string organizationNumber)
     {
-        // TODO: const the strings used here, they are used elsewhere too
         return response
             .Where(sr =>
                 sr.Documents.OfType<LegalEntityVesselDocument>().Any(d =>
-                    d.GetLegalEntityIdForRoleName(PluginConstants.LegalEntityOwnerRole) == organizationNumber ||
-                    d.GetLegalEntityIdForRoleName(PluginConstants.LegalEntityMaintenanceRole) == organizationNumber))
+                    d.GetLegalEntityIdForRoleType(PluginConstants.LegalEntityOwnerRole) == organizationNumber ||
+                    d.GetLegalEntityIdForRoleType(PluginConstants.LegalEntityMaintenanceRole) == organizationNumber))
             .ToList();
     }
 }

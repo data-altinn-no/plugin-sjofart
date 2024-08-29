@@ -45,7 +45,7 @@ public class ResponseModelMapper : IMapper<HistoricalVesselData, ResponseModel>
             input.Documents,
             d => d.Roles.Any(r => string.Equals(r.RoleType, PluginConstants.LegalEntityMaintenanceCompanyRole, StringComparison.InvariantCultureIgnoreCase)));
 
-        // TODO: Doesn't seem to be reliable enough
+        // TODO: Not reliable enough, need to find more and better examples of how maintenance responsible is documented
         if (maintenanceDocument is not null)
         {
             var mainentanceCompany = maintenanceDocument.Roles.First(r => string.Equals(r.RoleType, PluginConstants.LegalEntityMaintenanceCompanyRole, StringComparison.InvariantCultureIgnoreCase));
@@ -72,19 +72,27 @@ public class ResponseModelMapper : IMapper<HistoricalVesselData, ResponseModel>
 
     private static T GetNewestDocumentOfType<T>(List<IVesselDocument> documents) where T : IVesselDocument
     {
+        if (documents is null)
+        {
+            return default;
+        }
         var documentsOfType = GetDocumentsOfType<T>(documents);
         return documentsOfType.FirstOrDefault();
     }
 
     private static T GetNewestDocumentOfType<T>(List<IVesselDocument> documents, Func<T, bool> predicate) where T : IVesselDocument
     {
+        if (documents is null)
+        {
+            return default;
+        }
         var documentsOfType = GetDocumentsOfType<T>(documents);
         return documentsOfType.FirstOrDefault(predicate);
     }
 
     private static IEnumerable<T> GetDocumentsOfType<T>(IEnumerable<IVesselDocument> documents) where T : IVesselDocument
     {
-        return documents
+        return documents?
             .Where(d => d.GetType() == typeof(T))
             .Select(d => (T)d)
             .OrderByDescending(d => d.Date);
