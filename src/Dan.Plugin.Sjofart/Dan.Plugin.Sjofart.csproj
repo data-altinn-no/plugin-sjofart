@@ -3,6 +3,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <AzureFunctionsVersion>v4</AzureFunctionsVersion>
     <OutputType>Exe</OutputType>
+    <_FunctionsSkipCleanOutput>true</_FunctionsSkipCleanOutput>
+    <UseAppHost>false</UseAppHost>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Dan.Common" Version="1.6.0" />
