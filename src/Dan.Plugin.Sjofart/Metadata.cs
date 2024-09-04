@@ -30,6 +30,7 @@ public class Metadata : IEvidenceSourceMetadata
             {
                 EvidenceCodeName = "Skipsregistrene",
                 EvidenceSource = PluginConstants.EvidenceSource,
+                ServiceContext ="eDueDiligence",
                 Values =
                 [
                     new EvidenceValue
