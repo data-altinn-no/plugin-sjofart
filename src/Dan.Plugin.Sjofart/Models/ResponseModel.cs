@@ -1,5 +1,4 @@
 using System;
-using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 
 namespace Dan.Plugin.Sjofart.Models;
@@ -54,6 +53,9 @@ public class ResponseModel
 
     [JsonProperty("heftelsebeloep")]
     public double? LiabilityAmount { get; set; }
+
+    [JsonProperty("heftelsevaluta")]
+    public string LiabilityCurrency { get; set; }
 
     [JsonProperty("byggeverft")]
     public string ShipYard { get; set; }

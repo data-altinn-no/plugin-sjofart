@@ -30,22 +30,37 @@ public class ResponseModelMapper : IMapper<HistoricalVesselData, ResponseModel>
             responseModel.ShipType = measurementDocument.SrMeasurementData.VesselType;
         }
 
-        var ownerDocument = GetNewestDocumentOfType<AuthorityDocument>(
+        // Find newest authority (hjemmel) document where there is a role named "eier"
+        var authorityDocument = GetNewestDocumentOfType<AuthorityDocument>(
             input.Documents,
             d => d.Roles.Any(r => string.Equals(r.RoleType, PluginConstants.LegalEntityOwnerRole, StringComparison.InvariantCultureIgnoreCase)));
 
-        if (ownerDocument is not null)
+        // Finds newest deed (skjøte) document where there is a role named "eier"
+        var deedDocument = GetNewestDocumentOfType<DeedDocument>(
+            input.Documents,
+            d => d.Roles.Any(r => string.Equals(r.RoleType, PluginConstants.LegalEntityOwnerRole, StringComparison.InvariantCultureIgnoreCase)));
+
+        // Gets the newest of them and casts to LegalEntityVesselDocument to get the LegalEntity
+        if (GetNewestOfDocuments(authorityDocument, deedDocument) is LegalEntityVesselDocument ownerDocument)
         {
             var owner = ownerDocument.Roles.First(r => string.Equals(r.RoleType, PluginConstants.LegalEntityOwnerRole, StringComparison.InvariantCultureIgnoreCase));
             responseModel.OwnerName = owner.LegalEntity.Name;
             responseModel.OwnerOrgNumber = owner.LegalEntity.EntityId;
         }
 
+        // Liability information is found on SKJØTE documents
+        if (deedDocument is not null)
+        {
+            responseModel.LiabilityAmount = deedDocument.Amount;
+            responseModel.LiabilityCurrency = deedDocument.Currency;
+            responseModel.LiabilityDate = deedDocument.Date;
+        }
+
+        // Find newest maintenance document where there is a role named "driftsselskap"
         var maintenanceDocument = GetNewestDocumentOfType<MaintenanceDocument>(
             input.Documents,
             d => d.Roles.Any(r => string.Equals(r.RoleType, PluginConstants.LegalEntityMaintenanceCompanyRole, StringComparison.InvariantCultureIgnoreCase)));
 
-        // TODO: Not reliable enough, need to find more and better examples of how maintenance responsible is documented
         if (maintenanceDocument is not null)
         {
             var mainentanceCompany = maintenanceDocument.Roles.First(r => string.Equals(r.RoleType, PluginConstants.LegalEntityMaintenanceCompanyRole, StringComparison.InvariantCultureIgnoreCase));
@@ -64,8 +79,6 @@ public class ResponseModelMapper : IMapper<HistoricalVesselData, ResponseModel>
         {
             responseModel.ShipYard = shipyardDocument.Construction?.Shipyard;
         }
-
-        // TODO: We need to know how to get liability data
 
         return responseModel;
     }
@@ -96,5 +109,17 @@ public class ResponseModelMapper : IMapper<HistoricalVesselData, ResponseModel>
             .Where(d => d.GetType() == typeof(T))
             .Select(d => (T)d)
             .OrderByDescending(d => d.Date);
+    }
+
+    private static IVesselDocument GetNewestOfDocuments(params IVesselDocument[] documents)
+    {
+        if (documents is null || documents.Length == 0 || documents.All(d => d is null))
+        {
+            return default;
+        }
+
+        return documents
+            .Where(d => d is not null)
+            .OrderByDescending(d => d.Date).First();
     }
 }

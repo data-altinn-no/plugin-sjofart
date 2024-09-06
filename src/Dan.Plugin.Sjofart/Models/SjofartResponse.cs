@@ -1,19 +1,21 @@
-﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Dan.Plugin.Sjofart.Models;
 
+[Serializable]
 public class SjofartResponse<T>
 {
-    [JsonPropertyName("Offset")]
+    [JsonProperty(nameof(Offset))]
     public int Offset { get; set; }
 
-    [JsonPropertyName("Count")]
+    [JsonProperty(nameof(Count))]
     public int Count { get; set; }
 
-    [JsonPropertyName("PageSize")]
+    [JsonProperty(nameof(PageSize))]
     public int PageSize { get; set; }
 
-    [JsonPropertyName("SearchResult")]
+    [JsonProperty(nameof(SearchResult))]
     public List<T> SearchResult { get; set; }
 }

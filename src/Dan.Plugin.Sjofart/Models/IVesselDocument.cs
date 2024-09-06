@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Text.Json.Serialization;
-using Google.Protobuf.WellKnownTypes;
+using Newtonsoft.Json;
 
 namespace Dan.Plugin.Sjofart.Models;
 
@@ -27,6 +26,12 @@ public interface IDocumentIdentifiable
 
 public abstract class VesselDocument : IVesselDocument
 {
-    [JsonPropertyName(IVesselDocument.DateId)]
+    [JsonProperty(IVesselDocument.DocumentTypeId)]
+    public string DocumentType { get; set; }
+
+    [JsonProperty(IVesselDocument.DocumentTypeClassId)]
+    public string DocumentTypeClass { get; set; }
+
+    [JsonProperty(IVesselDocument.DateId)]
     public DateTime Date { get; set; }
 }

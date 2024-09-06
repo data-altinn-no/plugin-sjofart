@@ -6,5 +6,5 @@ namespace Dan.Plugin.Sjofart.Models.VesselDocuments;
 public class AuthorityDocument : LegalEntityVesselDocument, IDocumentIdentifiable
 {
     public static string DocumentTypeClassIdentifier => "HJ";
-    public static string[] DocumentTypeIdentifiers => ["HJEMMELSDOKUMENT", "SKJØTE"];
+    public static string[] DocumentTypeIdentifiers => ["HJEMMELSDOKUMENT", "BYGGEBREV"];
 }

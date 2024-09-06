@@ -36,6 +36,8 @@ public class VesselDocumentConverterTests
 
         var expected = new AuthorityDocument
         {
+            DocumentTypeClass = "HJ",
+            DocumentType = "HJEMMELSDOKUMENT",
             Date = new DateTime(2024, 8, 29),
             Roles =
             [
@@ -60,7 +62,7 @@ public class VesselDocumentConverterTests
     }
 
     [Fact]
-    public void Deserialize_VesselDataHasSkjoeteDokument_ShouldGetAuthorityDocument()
+    public void Deserialize_VesselDataHasSkjoeteDokument_ShouldGetDeedDocument()
     {
         // Arrange
         const string json = """
@@ -70,6 +72,8 @@ public class VesselDocumentConverterTests
                    "DocumentTypeClass": "HJ",
                    "DocumentType": "SKJØTE",
                    "Date": "2024.08.29",
+                   "Currency": "USD",
+                   "Amount": "100.00",
                    "Roles": [
                        {
                            "RoleType": "RoleType",
@@ -84,9 +88,13 @@ public class VesselDocumentConverterTests
         }
         """;
 
-        var expected = new AuthorityDocument
+        var expected = new DeedDocument()
         {
+            DocumentTypeClass = "HJ",
+            DocumentType = "SKJØTE",
             Date = new DateTime(2024, 8, 29),
+            Currency = "USD",
+            Amount = 100.00,
             Roles =
             [
                 new DocumentRole
@@ -136,6 +144,8 @@ public class VesselDocumentConverterTests
 
         var expected = new MaintenanceDocument
         {
+            DocumentTypeClass = "HJ",
+            DocumentType = "DRIFT IHT SKIPSSIKKERHETSLOVEN",
             Date = new DateTime(2024, 8, 29),
             Roles =
             [
@@ -186,6 +196,8 @@ public class VesselDocumentConverterTests
 
         var expected = new MaintenanceDocument
         {
+            DocumentTypeClass = "HJ",
+            DocumentType = "DRIFT IHHT SJØLOVEN/NIS LOVEN",
             Date = new DateTime(2024, 8, 29),
             Roles =
             [
@@ -232,6 +244,8 @@ public class VesselDocumentConverterTests
 
         var expected = new MeasurementDataDocument
         {
+            DocumentTypeClass = "TE",
+            DocumentType = "MÅLEBREV",
             Date = new DateTime(2024, 8, 29),
             SrMeasurementData = new SrMeasurementData
             {
@@ -272,6 +286,8 @@ public class VesselDocumentConverterTests
 
         var expected = new MeasurementDataDocument
         {
+            DocumentTypeClass = "TE",
+            DocumentType = "MÅLEDATA",
             Date = new DateTime(2024, 8, 29),
             SrMeasurementData = new SrMeasurementData
             {
@@ -310,6 +326,8 @@ public class VesselDocumentConverterTests
 
         var expected = new MessageDocument
         {
+            DocumentTypeClass = "ET",
+            DocumentType = "MELDING",
             Date = new DateTime(2024, 8, 29),
             Construction = new Construction
             {
@@ -346,6 +364,8 @@ public class VesselDocumentConverterTests
 
         var expected = new ShipyardDocument
         {
+            DocumentTypeClass = "ET",
+            DocumentType = "MELDING BYGGEVERFT",
             Date = new DateTime(2024, 8, 29),
             Construction = new Construction
             {

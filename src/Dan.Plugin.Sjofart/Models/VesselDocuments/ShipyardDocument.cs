@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Text.Json.Serialization;
 using Dan.Plugin.Sjofart.Models.VesselDocuments.DocumentProperties;
+using Newtonsoft.Json;
 
 namespace Dan.Plugin.Sjofart.Models.VesselDocuments;
 
@@ -10,6 +10,6 @@ public class ShipyardDocument : VesselDocument, IDocumentIdentifiable
     public static string DocumentTypeClassIdentifier => "ET";
     public static string[] DocumentTypeIdentifiers => ["MELDING BYGGEVERFT"];
 
-    [JsonPropertyName("Construction")]
+    [JsonProperty(nameof(Construction))]
     public Construction Construction { get; set; }
 }
