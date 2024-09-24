@@ -13,15 +13,11 @@ using NJsonSchema;
 
 namespace Dan.Plugin.Sjofart;
 
-/// <summary>
-/// All plugins must implement IEvidenceSourceMetadata, which describes that datasets returned by this plugin. An example is implemented below.
-/// </summary>
 public class Metadata : IEvidenceSourceMetadata
 {
-    /// <summary>
-    ///
-    /// </summary>
-    /// <returns></returns>
+    const string EDueDiligence = "eDueDiligence";
+    private readonly List<string> _belongsToEDueDiligence = [EDueDiligence];
+
     public List<EvidenceCode> GetEvidenceCodes()
     {
         return
@@ -30,7 +26,8 @@ public class Metadata : IEvidenceSourceMetadata
             {
                 EvidenceCodeName = "Skipsregistrene",
                 EvidenceSource = PluginConstants.EvidenceSource,
-                ServiceContext ="eDueDiligence",
+                ServiceContext = EDueDiligence,
+                BelongsToServiceContexts = _belongsToEDueDiligence,
                 Values =
                 [
                     new EvidenceValue
@@ -46,14 +43,6 @@ public class Metadata : IEvidenceSourceMetadata
         ];
     }
 
-
-    /// <summary>
-    /// This function must be defined in all DAN plugins, and is used by core to enumerate the available datasets across all plugins.
-    /// Normally this should not be changed.
-    /// </summary>
-    /// <param name="req"></param>
-    /// <param name="context"></param>
-    /// <returns></returns>
     [Function(Constants.EvidenceSourceMetadataFunctionName)]
     public async Task<HttpResponseData> GetMetadataAsync(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestData req,
