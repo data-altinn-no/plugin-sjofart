@@ -1,4 +1,5 @@
 ﻿using System;
+using AwesomeAssertions;
 using Dan.Plugin.Sjofart.Mappers;
 using Dan.Plugin.Sjofart.Models;
 using Dan.Plugin.Sjofart.Models.VesselDocuments;
