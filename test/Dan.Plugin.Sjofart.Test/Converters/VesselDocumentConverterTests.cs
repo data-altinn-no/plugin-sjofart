@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using AwesomeAssertions;
 using Dan.Plugin.Sjofart.Models;
 using Dan.Plugin.Sjofart.Models.VesselDocuments;
 using Dan.Plugin.Sjofart.Models.VesselDocuments.DocumentProperties;
