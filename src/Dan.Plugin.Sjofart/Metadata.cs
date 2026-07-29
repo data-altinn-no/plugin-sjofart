@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Dan.Plugin.Sjofart.Config;
-using NJsonSchema;
 
 namespace Dan.Plugin.Sjofart;
 
@@ -34,9 +33,8 @@ public class Metadata : IEvidenceSourceMetadata
                     {
                         EvidenceValueName = "default",
                         ValueType = EvidenceValueType.JsonSchema,
-                        JsonSchemaDefintion = JsonSchema
-                            .FromType<ResponseModel>()
-                            .ToJson(Newtonsoft.Json.Formatting.Indented)
+                        JsonSchemaDefintion = EvidenceValue
+                            .SchemaFromObject<ResponseModel>(Newtonsoft.Json.Formatting.Indented)
                     }
                 ]
             }
